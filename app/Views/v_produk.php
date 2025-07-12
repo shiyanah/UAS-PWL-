@@ -28,6 +28,10 @@ if (session()->getFlashData('failed')) {
     Download Data
 </a>
 
+<<<<<<< HEAD
+=======
+<!-- Table with stripped rows -->
+>>>>>>> b975839726026fcc5ed5e2156954efa0aaa1b1b7
 <table class="table datatable">
     <thead>
         <tr>
@@ -36,8 +40,12 @@ if (session()->getFlashData('failed')) {
             <th scope="col">Harga</th>
             <th scope="col">Jumlah</th>
             <th scope="col">Foto</th>
+<<<<<<< HEAD
             <th scope="col">Deskripsi</th>
             <th scope="col">Aksi</th>
+=======
+            <th scope="col"></th>
+>>>>>>> b975839726026fcc5ed5e2156954efa0aaa1b1b7
         </tr>
     </thead>
     <tbody>
@@ -52,7 +60,10 @@ if (session()->getFlashData('failed')) {
                         <img src="<?php echo base_url() . "NiceAdmin/assets/img/" . $produk['foto'] ?>" width="100px">
                     <?php endif; ?>
                 </td>
+<<<<<<< HEAD
                 <td><?= $produk['deskripsi'] ?? 'Tidak ada deskripsi' ?></td>
+=======
+>>>>>>> b975839726026fcc5ed5e2156954efa0aaa1b1b7
                 <td>
                     <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#editModal-<?= $produk['id'] ?>">
                         Ubah
@@ -62,6 +73,10 @@ if (session()->getFlashData('failed')) {
                     </a>
                 </td>
             </tr>
+<<<<<<< HEAD
+=======
+            <!-- Edit Modal Begin -->
+>>>>>>> b975839726026fcc5ed5e2156954efa0aaa1b1b7
             <div class="modal fade" id="editModal-<?= $produk['id'] ?>" tabindex="-1">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
@@ -84,11 +99,15 @@ if (session()->getFlashData('failed')) {
                                     <label for="name">Jumlah</label>
                                     <input type="text" name="jumlah" class="form-control" id="jumlah" value="<?= $produk['jumlah'] ?>" placeholder="Jumlah Barang" required>
                                 </div>
+<<<<<<< HEAD
                                 <div class="form-group">
                                     <label for="deskripsi">Deskripsi</label>
                                     <textarea name="deskripsi" class="form-control" id="deskripsi" placeholder="Deskripsi Barang"><?= $produk['deskripsi'] ?? '' ?></textarea>
                                 </div>
                                 <img src="<?php echo base_url() . "NiceAdmin/assets/img/" . $produk['foto'] ?>" width="100px">
+=======
+                                <img src="<?php echo base_url() . "img/" . $produk['foto'] ?>" width="100px">
+>>>>>>> b975839726026fcc5ed5e2156954efa0aaa1b1b7
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="check" name="check" value="1">
                                     <label class="form-check-label" for="check">
@@ -108,9 +127,18 @@ if (session()->getFlashData('failed')) {
                     </div>
                 </div>
             </div>
+<<<<<<< HEAD
         <?php endforeach ?>
     </tbody>
 </table>
+=======
+            <!-- Edit Modal End -->
+        <?php endforeach ?>
+    </tbody>
+</table>
+<!-- End Table with stripped rows -->
+<!-- Add Modal Begin -->
+>>>>>>> b975839726026fcc5ed5e2156954efa0aaa1b1b7
 <div class="modal fade" id="addModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -134,10 +162,13 @@ if (session()->getFlashData('failed')) {
                         <input type="text" name="jumlah" class="form-control" id="jumlah" placeholder="Jumlah Barang" required>
                     </div>
                     <div class="form-group">
+<<<<<<< HEAD
                         <label for="deskripsi">Deskripsi</label>
                         <textarea name="deskripsi" class="form-control" id="deskripsi" placeholder="Deskripsi Barang"></textarea>
                     </div>
                     <div class="form-group">
+=======
+>>>>>>> b975839726026fcc5ed5e2156954efa0aaa1b1b7
                         <label for="name">Foto</label>
                         <input type="file" class="form-control" id="foto" name="foto">
                     </div>
@@ -150,4 +181,8 @@ if (session()->getFlashData('failed')) {
         </div>
     </div>
 </div>
+<<<<<<< HEAD
+=======
+<!-- Add Modal End -->
+>>>>>>> b975839726026fcc5ed5e2156954efa0aaa1b1b7
 <?= $this->endSection() ?>

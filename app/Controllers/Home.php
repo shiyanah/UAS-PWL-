@@ -27,6 +27,7 @@ class Home extends BaseController
         $data['product'] = $product;
         return view('v_home', $data);
     }
+<<<<<<< HEAD
 
     public function produk_detail($id)
     {
@@ -62,6 +63,29 @@ class Home extends BaseController
         }
 
         $data['product'] = $product;
+=======
+    public function profile()
+    {
+        $username = session()->get('username');
+        $data['username'] = $username;
+
+        $buy = $this->transaction->where('username', $username)->findAll();
+        $data['buy'] = $buy;
+
+        $product = [];
+
+        if (!empty($buy)) {
+            foreach ($buy as $item) {
+                $detail = $this->transaction_detail->select('transaction_detail.*, product.nama, product.harga, product.foto')->join('product', 'transaction_detail.product_id=product.id')->where('transaction_id', $item['id'])->findAll();
+
+                if (!empty($detail)) {
+                    $product[$item['id']] = $detail;
+                }
+            }
+        }
+
+        $data['product'] = $product;
+>>>>>>> b975839726026fcc5ed5e2156954efa0aaa1b1b7
 
         return view('v_profile', $data);
     }

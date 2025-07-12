@@ -1230,6 +1230,7 @@ h6 {
   text-align: center;
   font-size: 13px;
   color: #012970;
+<<<<<<< HEAD
 }
 
 /* untuk mengubah background pada file login */
@@ -1244,4 +1245,6 @@ h6 {
   width: 100vw;
   z-index: -1;
   /* opacity: 0.5; /* Opasitas sesuai kebutuhan */
+=======
+>>>>>>> b975839726026fcc5ed5e2156954efa0aaa1b1b7
 }

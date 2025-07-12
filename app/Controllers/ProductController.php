@@ -31,8 +31,11 @@ class ProductController extends BaseController
             'nama' => $this->request->getPost('nama'),
             'harga' => $this->request->getPost('harga'),
             'jumlah' => $this->request->getPost('jumlah'),
+<<<<<<< HEAD
             // Menambahkan deskripsi ke data yang akan disimpan
             'deskripsi' => $this->request->getPost('deskripsi'), 
+=======
+>>>>>>> b975839726026fcc5ed5e2156954efa0aaa1b1b7
             'created_at' => date("Y-m-d H:i:s")
         ];
 
@@ -46,7 +49,10 @@ class ProductController extends BaseController
 
         return redirect('produk')->with('success', 'Data Berhasil Ditambah');
     }
+<<<<<<< HEAD
     
+=======
+>>>>>>> b975839726026fcc5ed5e2156954efa0aaa1b1b7
     public function edit($id)
     {
         $dataProduk = $this->product->find($id);
@@ -55,8 +61,11 @@ class ProductController extends BaseController
             'nama' => $this->request->getPost('nama'),
             'harga' => $this->request->getPost('harga'),
             'jumlah' => $this->request->getPost('jumlah'),
+<<<<<<< HEAD
             // Menambahkan deskripsi ke data yang akan diubah
             'deskripsi' => $this->request->getPost('deskripsi'),
+=======
+>>>>>>> b975839726026fcc5ed5e2156954efa0aaa1b1b7
             'updated_at' => date("Y-m-d H:i:s")
         ];
 
@@ -117,4 +126,8 @@ class ProductController extends BaseController
         // output the generated pdf
         $dompdf->stream($filename);
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> b975839726026fcc5ed5e2156954efa0aaa1b1b7

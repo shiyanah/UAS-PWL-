@@ -2,42 +2,117 @@
 
 namespace App\Controllers;
 
+use App\Models\ProductModel;
+// Hapus atau komen TransactionModel dan TransactionDetailModel jika tidak digunakan langsung di Home
+// use App\Models\TransactionModel;
+// use App\Models\TransactionDetailModel;
+
 class Home extends BaseController
 {
+    protected $product;
+    // Hapus atau komen ini jika tidak digunakan langsung di Home
+    // protected $transaction;
+    // protected $transaction_detail;
+
+    function __construct()
+    {
+        helper('form');
+        helper('number');
+        $this->product = new ProductModel();
+        // Hapus atau komen ini jika tidak digunakan langsung di Home
+        // $this->transaction = new TransactionModel();
+        // $this->transaction_detail = new TransactionDetailModel();
+    }
+
+
     public function index()
     {
-        return view('welcome_message');
+        $product = $this->product->findAll();
+        $data['product'] = $product;
+        return view('v_home', $data);
     }
 
-    public function produk()
+    public function profile()
     {
-        return view('content/produk');
+        $username = session()->get('username');
+        $data['username'] = $username; // Mengirimkan username ke view
+
+        // DISESUAIKAN: Sekarang akan memuat view v_profile_extended.php
+        return view('v_profile', $data);
     }
 
-    public function kategori($id = null)
+    // Metode FAQ Baru
+    public function faq()
     {
-        $data['kat'] = [
-            1 => 'Snack',
-            2 => 'Makanan',
-            3 => 'Minuman',
-            4 => 'Bumbu dapur',
-            5 => 'Alat Tulis'
+        // Data FAQ (bisa diambil dari database jika mau lebih dinamis)
+        $data['faqs'] = [
+            [
+                'question' => 'Bagaimana cara mendaftar di Toko Arunika?',
+                'answer' => 'Anda bisa mendaftar dengan mengklik tombol "Daftar" di pojok kanan atas halaman, lalu mengisi formulir pendaftaran dengan data diri yang valid.'
+            ],
+            [
+                'question' => 'Bagaimana cara melakukan pemesanan?',
+                'answer' => 'Pilih produk yang Anda inginkan, klik tombol "Beli" atau "Tambah ke Keranjang", lalu ikuti langkah-langkah checkout hingga pembayaran selesai.'
+            ],
+            [
+                'question' => 'Metode pembayaran apa saja yang tersedia?',
+                'answer' => 'Kami menerima pembayaran melalui transfer bank (BCA, Mandiri), dan e-wallet (OVO, GoPay).'
+            ],
+            [
+                'question' => 'Berapa lama waktu pengiriman?',
+                'answer' => 'Waktu pengiriman bervariasi tergantung lokasi Anda dan metode pengiriman yang dipilih. Estimasi pengiriman akan ditampilkan saat checkout.'
+            ],
+            [
+                'question' => 'Bagaimana cara melacak pesanan saya?',
+                'answer' => 'Anda bisa melacak pesanan melalui halaman "Riwayat Pesanan" di profil Anda, atau dengan memasukkan nomor resi pada menu pelacakan.'
+            ],
+            [
+                'question' => 'Apakah produk bisa dikembalikan atau ditukar?',
+                'answer' => 'Produk dapat dikembalikan atau ditukar dalam waktu 7 hari setelah penerimaan, dengan syarat produk masih dalam kondisi asli dan belum terpakai. Silakan hubungi layanan pelanggan kami untuk informasi lebih lanjut.'
+            ]
         ];
 
-        $kat = $data['kat'];
-           // Jika ID kategori diberikan, tampilkan kategori yang sesuai
-        if ($id !== null) {
-            echo "<h1> " . ($kat[$id] ?? 'Kategori tidak ditemukan') . "</h1>";
-           // echo "<a href='/kategori'>Kembali ke halaman kategori</a>";
-            // Jika tidak ada ID yang diberikan, tampilkan semua kategori
-        } else {
-            echo "<h1>Ini adalah halaman kategori</h1>";
-            echo "<ul>";
-            foreach ($kat as $key => $value) {
-                echo "<li><a href='/kategori/$key'>$value</a></li>";
-            }
-            echo "</ul>";
-        }
-        
+        $data['hlm'] = 'FAQ'; // Untuk judul halaman jika layout Anda menggunakannya
+        return view('v_faq', $data);
     }
+
+    public function hello($name = null)
+    {
+        $data['nama'] = $name;
+        $data['title'] = "Judul halaman";
+        return view('front', $data);
+    }
+
+    public function keranjang($id = null)
+    {
+        // Ini adalah fungsi yang tampaknya tidak terpakai atau duplikasi dari TransaksiController::index()
+        // Anda mungkin ingin menghapusnya jika TransaksiController::index() sudah menangani keranjang
+        $data = [
+            'kat' => [
+                'Alat Tulis',
+                'Pakaian',
+                'Pertukangan',
+                'Elektronik',
+                'Snack'
+            ],
+        ];
+        $meta = ['title' => 'keranjang'];
+        if (!is_null($id)) {
+            echo $data['kat'][$id];
+        } else {
+            echo view('layout/header', $meta);
+            echo view('layout/sidebar');
+            echo view('content/keranjang', $data);
+            echo view('layout/footer');
+        }
+    }
+    public function password()
+    {
+        echo view('Views/hash');
+    }
+    // Hapus public function faq() jika Anda memiliki fungsi ini sebelumnya
+    // public function faq()
+    // {
+    //     echo view('layout/faq');
+    // }
 }

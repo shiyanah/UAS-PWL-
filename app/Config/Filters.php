@@ -16,7 +16,7 @@ class Filters extends BaseConfig
      * make reading things nicer and simpler.
      *
      * @var array<string, class-string|list<class-string>> [filter_name => classname]
-     *                                                     or [filter_name => [classname1, classname2, ...]]
+     * or [filter_name => [classname1, classname2, ...]]
      */
     public array $aliases = [
         'csrf'          => CSRF::class,
@@ -24,6 +24,8 @@ class Filters extends BaseConfig
         'honeypot'      => Honeypot::class,
         'invalidchars'  => InvalidChars::class,
         'secureheaders' => SecureHeaders::class,
+        'auth'          => \App\Filters\AuthFilter::class, // DISESUAIKAN: Mengarah ke AuthFilter
+        'role'          => \App\Filters\RoleFilter::class, // DITAMBAHKAN: Alias untuk RoleFilter
     ];
 
     /**

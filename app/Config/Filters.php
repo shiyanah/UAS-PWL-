@@ -24,8 +24,12 @@ class Filters extends BaseConfig
         'honeypot'      => Honeypot::class,
         'invalidchars'  => InvalidChars::class,
         'secureheaders' => SecureHeaders::class,
-        'auth'          => \App\Filters\AuthFilter::class, // DISESUAIKAN: Mengarah ke AuthFilter
-        'role'          => \App\Filters\RoleFilter::class, // DITAMBAHKAN: Alias untuk RoleFilter
+
+
+        // Menggunakan AuthFilter dan RoleFilter, memastikan tidak ada duplikasi dan koma yang benar
+        'auth'          => \App\Filters\AuthFilter::class, // Mengarah ke AuthFilter
+        'role'          => \App\Filters\RoleFilter::class, // Alias untuk RoleFilter
+
     ];
 
     /**

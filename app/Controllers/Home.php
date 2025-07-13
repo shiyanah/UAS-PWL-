@@ -3,27 +3,23 @@
 namespace App\Controllers;
 
 use App\Models\ProductModel;
-// Hapus atau komen TransactionModel dan TransactionDetailModel jika tidak digunakan langsung di Home
-// use App\Models\TransactionModel;
-// use App\Models\TransactionDetailModel;
+use App\Models\TransactionModel; // Pastikan ini di-use
+use App\Models\TransactionDetailModel; // Pastikan ini di-use
 
 class Home extends BaseController
 {
     protected $product;
-    // Hapus atau komen ini jika tidak digunakan langsung di Home
-    // protected $transaction;
-    // protected $transaction_detail;
+    protected $transaction; // Deklarasi properti transaction
+    protected $transaction_detail; // Deklarasi properti transaction_detail
 
     function __construct()
     {
-        helper('form');
-        helper('number');
+        // helper('form'); // Helper form dan number sudah dimuat di BaseController
+        // helper('number'); // Jika Anda sudah memuatnya di BaseController, bisa dihapus di sini
         $this->product = new ProductModel();
-        // Hapus atau komen ini jika tidak digunakan langsung di Home
-        // $this->transaction = new TransactionModel();
-        // $this->transaction_detail = new TransactionDetailModel();
+        $this->transaction = new TransactionModel(); // Inisialisasi model
+        $this->transaction_detail = new TransactionDetailModel(); // Inisialisasi model
     }
-
 
     public function index()
     {
@@ -35,13 +31,35 @@ class Home extends BaseController
     public function profile()
     {
         $username = session()->get('username');
-        $data['username'] = $username; // Mengirimkan username ke view
+        $id_user = session()->get('id_user'); // Ambil id_user dari session
+        $data['username'] = $username;
 
-        // DISESUAIKAN: Sekarang akan memuat view v_profile_extended.php
+        // Mengambil data transaksi berdasarkan id_user
+        $buy = $this->transaction->where('id_user', $id_user)->orderBy('created_at', 'DESC')->findAll();
+        $data['buy'] = $buy;
+
+        $product_details_in_transactions = []; // Mengubah nama variabel agar lebih jelas
+
+        if (!empty($buy)) {
+            foreach ($buy as $item) {
+                // Mengambil detail transaksi dan join dengan tabel produk untuk mendapatkan nama, harga, foto
+                $detail = $this->transaction_detail
+                    ->select('transaction_detail.*, product.nama, product.harga, product.foto')
+                    ->join('product', 'transaction_detail.product_id = product.id')
+                    ->where('transaction_id', $item['id'])
+                    ->findAll();
+
+                if (!empty($detail)) {
+                    $product_details_in_transactions[$item['id']] = $detail;
+                }
+            }
+        }
+
+        $data['product_details_in_transactions'] = $product_details_in_transactions; // Mengirimkan data ke view
         return view('v_profile', $data);
     }
 
-    // Metode FAQ Baru
+    // Metode FAQ
     public function faq()
     {
         // Data FAQ (bisa diambil dari database jika mau lebih dinamis)
@@ -76,6 +94,7 @@ class Home extends BaseController
         return view('v_faq', $data);
     }
 
+    // Metode hello (jika masih digunakan)
     public function hello($name = null)
     {
         $data['nama'] = $name;
@@ -83,6 +102,7 @@ class Home extends BaseController
         return view('front', $data);
     }
 
+    // Metode keranjang (jika masih digunakan, tapi disarankan TransaksiController yang menanganinya)
     public function keranjang($id = null)
     {
         // Ini adalah fungsi yang tampaknya tidak terpakai atau duplikasi dari TransaksiController::index()
@@ -106,13 +126,4 @@ class Home extends BaseController
             echo view('layout/footer');
         }
     }
-    public function password()
-    {
-        echo view('Views/hash');
-    }
-    // Hapus public function faq() jika Anda memiliki fungsi ini sebelumnya
-    // public function faq()
-    // {
-    //     echo view('layout/faq');
-    // }
 }

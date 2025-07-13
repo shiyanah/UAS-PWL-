@@ -2,26 +2,43 @@
 <?= $this->section('content') ?>
 <div class="row">
     <div class="col-lg-6">
+
+        <!-- Form Vertikal untuk Detail Pengiriman -->
         <?= form_open('buy', 'class="row g-3"') ?>
         <?= form_hidden('username', session()->get('username')) ?>
         <?= form_input(['type' => 'hidden', 'name' => 'total_harga', 'id' => 'total_harga', 'value' => '']) ?>
         <div class="col-12">
             <label for="nama" class="form-label">Nama</label>
+
             <input type="text" class="form-control" id="nama" value="<?php echo session()->get('username'); ?>">
         </div>
         <div class="col-12">
             <label for="alamat" class="form-label">Alamat</label>
             <input type="text" class="form-control" id="alamat" name="alamat">
+
+            <input type="text" class="form-control" id="nama" value="<?php echo session()->get('username'); ?>" readonly>
+        </div>
+        <div class="col-12">
+            <label for="alamat" class="form-label">Alamat Lengkap</label>
+            <input type="text" class="form-control" id="alamat" name="alamat" required>
         </div>
         <div class="col-12">
             <label for="kelurahan" class="form-label">Kelurahan</label>
             <select class="form-control" id="kelurahan" name="kelurahan" required></select>
+
             <input type="hidden" name="kelurahan_text" id="kelurahan_text">
         </div>
         <div class="col-12">
             <label for="layanan" class="form-label">Layanan</label>
             <select class="form-control" id="layanan" name="layanan" required></select>
             <input type="hidden" name="layanan_text" id="layanan_text">
+
+            <input type="hidden" name="kelurahan_text" id="kelurahan_text"> <!-- Untuk menyimpan teks lengkap kelurahan -->
+        </div>
+        <div class="col-12">
+            <label for="layanan" class="form-label">Layanan Pengiriman</label>
+            <select class="form-control" id="layanan" name="layanan" required></select>
+            <input type="hidden" name="layanan_text" id="layanan_text"> <!-- Untuk menyimpan teks lengkap layanan -->
         </div>
         <div class="col-12">
             <label for="ongkir" class="form-label">Ongkir</label>
@@ -29,6 +46,9 @@
         </div>
     </div>
     <div class="col-lg-6">
+
+        <!-- Tabel Ringkasan Pesanan -->
+
         <div class="col-12">
             <table class="table">
                 <thead>
@@ -71,16 +91,27 @@
         <div class="text-center">
             <button type="submit" class="btn btn-primary">Buat Pesanan</button>
         </div>
+
         </form>
     </div>
 </div>
 <?= $this->endSection() ?>
+
+</form><!-- Penutup Form Vertikal -->
+</div>
+</div>
+<?= $this->endSection() ?>
+
 <?= $this->section('script') ?>
 <script>
     $(document).ready(function() {
         var ongkir = 0;
         var total = 0;
+
         hitungTotal();
+
+        hitungTotal(); // Panggil saat dokumen siap untuk inisialisasi total
+
         $('#kelurahan').select2({
             placeholder: 'Ketik nama kelurahan...',
             ajax: {
@@ -113,7 +144,10 @@
             $('#kelurahan_text').val($(this).find('option:selected').text());
 
             $("#layanan").empty();
+
             ongkir = 0;
+
+
 
             $.ajax({
                 url: "<?= site_url('get-cost') ?>",
@@ -123,6 +157,11 @@
                 },
                 dataType: 'json',
                 success: function(data) {
+
+                    $("#layanan").append($('<option>', {
+                        value: '',
+                        text: 'Pilih Layanan Pengiriman'
+                    })); // Opsi default
                     data.forEach(function(item) {
                         var text = item["description"] + " (" + item["service"] + ") : estimasi " + item["etd"] + "";
                         $("#layanan").append($('<option>', {
@@ -133,11 +172,25 @@
                     // Trigger change pada layanan setelah option ditambahkan untuk menghitung total awal
                     $('#layanan').trigger('change');
                 },
+
+                error: function(xhr, status, error) {
+                    console.error("Error fetching cost:", error);
+                    $("#layanan").empty();
+                    $("#layanan").append($('<option>', {
+                        value: '',
+                        text: 'Tidak ada layanan tersedia'
+                    }));
+                    ongkir = 0; // Pastikan ongkir 0 jika ada error
+                    hitungTotal();
+                }
+
             });
         });
 
         $("#layanan").on('change', function() {
-            ongkir = parseInt($(this).val());
+
+            ongkir = parseInt($(this).val()) || 0; // Pastikan ongkir adalah angka, default 0 jika NaN
+
             // Simpan teks lengkap layanan ke hidden input
             $('#layanan_text').val($(this).find('option:selected').text());
             hitungTotal();
@@ -147,7 +200,10 @@
             total = ongkir + <?= $total ?>;
 
             $("#ongkir").val(ongkir);
-            $("#total").html("IDR " + total.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,'));
+
+            // Format angka total ke IDR
+            $("#total").html("IDR " + total.toLocaleString('id-ID')); // Menggunakan toLocaleString untuk format IDR
+
             $("#total_harga").val(total);
         }
     });

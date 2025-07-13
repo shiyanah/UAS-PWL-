@@ -37,10 +37,17 @@ if (uri_string() != "") {
   <link href="<?= base_url() ?>NiceAdmin/assets/css/style.css" rel="stylesheet">
 
   <style>
+
     body {
       background: url('<?= base_url() ?>NiceAdmin/assets/img/login.jpg') no-repeat center center fixed;
       background-size: cover;
     }
+
+      body {
+          background: url('<?= base_url() ?>NiceAdmin/assets/img/bglogin2.jpg') no-repeat center center fixed;
+          background-size: cover;
+      }
+
   </style>
 
   <!-- =======================================================

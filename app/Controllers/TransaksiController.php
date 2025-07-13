@@ -5,26 +5,28 @@ namespace App\Controllers;
 use App\Models\TransactionModel;
 use App\Models\TransactionDetailModel;
 use App\Models\ProductModel;
+use CodeIgniter\Controller; // Pastikan BaseController diwarisi dari CodeIgniter\Controller jika tidak ada BaseController kustom
 
-class TransaksiController extends BaseController
+class TransaksiController extends BaseController // Jika Anda memiliki BaseController kustom, biarkan saja
 {
     protected $cart;
     protected $client;
     protected $apiKey;
     protected $transaction;
     protected $transaction_detail;
-    protected $productModel;
+    protected $productModel; // Deklarasikan ProductModel
 
     function __construct()
     {
-        helper('number');
-        helper('form');
+        // Pastikan helper dimuat dengan benar
+        helper(['number', 'form']);
         $this->cart = \Config\Services::cart();
         $this->client = new \GuzzleHttp\Client();
+        // Pastikan variabel lingkungan COST_KEY sudah didefinisikan di file .env Anda
         $this->apiKey = env('COST_KEY');
         $this->transaction = new TransactionModel();
         $this->transaction_detail = new TransactionDetailModel();
-        $this->productModel = new ProductModel();
+        $this->productModel = new ProductModel(); // Inisialisasi ProductModel
     }
 
     public function index()
@@ -74,16 +76,15 @@ class TransaksiController extends BaseController
         session()->setflashdata('success', 'Keranjang Berhasil Dihapus');
         return redirect()->to(base_url('keranjang'));
     }
+
     public function checkout()
     {
-        if ($this->cart->totalItems() == 0) {
-            return redirect()->to(base_url('keranjang'))->with('failed', 'Keranjang belanja Anda kosong!');
-        }
         $data['items'] = $this->cart->contents();
         $data['total'] = $this->cart->total();
 
         return view('v_checkout', $data);
     }
+
     public function getLocation()
     {
         $search = $this->request->getGet('search');
@@ -108,11 +109,10 @@ class TransaksiController extends BaseController
         }
     }
 
-
     public function getCost()
     {
         $destination = $this->request->getGet('destination');
-        $weight = 1000;
+        $weight = 1000; // Berat statis 1000 gram
 
         try {
             $response = $this->client->request(
@@ -122,7 +122,7 @@ class TransaksiController extends BaseController
                     'multipart' => [
                         [
                             'name' => 'origin',
-                            'contents' => '64999'
+                            'contents' => '64999' // Asal pengiriman statis: PEDURUNGAN TENGAH
                         ],
                         [
                             'name' => 'destination',
@@ -134,7 +134,7 @@ class TransaksiController extends BaseController
                         ],
                         [
                             'name' => 'courier',
-                            'contents' => 'jne'
+                            'contents' => 'jne' // Kurir statis: JNE
                         ]
                     ],
                     'headers' => [
@@ -151,7 +151,6 @@ class TransaksiController extends BaseController
             return $this->response->setJSON(['error' => 'Failed to calculate cost. Please try again.']);
         }
     }
-
 
     public function buy()
     {
@@ -178,12 +177,12 @@ class TransaksiController extends BaseController
             $dataPesanan = [
                 'id_user' => $id_user,
                 'username' => $username,
-                'alamat_pengiriman' => $alamat_pengiriman . ', ' . $kelurahan_display,
-                'layanan_kurir' => $layanan_display,
+                'alamat' => $alamat_pengiriman, // Menggunakan 'alamat' sesuai model
+                'kelurahan' => $kelurahan_display, // Simpan nama kelurahan yang lengkap
+                'layanan_pengiriman' => $layanan_display, // Simpan deskripsi layanan
                 'ongkir' => $ongkir,
                 'total_harga' => $total_final,
                 'status_pesanan' => 'menunggu pembayaran', // Status awal
-                'tanggal_transaksi' => date("Y-m-d H:i:s"),
                 'created_at' => date("Y-m-d H:i:s"),
                 'updated_at' => date("Y-m-d H:i:s")
             ];
@@ -196,11 +195,11 @@ class TransaksiController extends BaseController
                 $dataFormDetail = [
                     'transaction_id' => $transaction_id,
                     'product_id' => $value['id'],
-                    'nama_produk' => $value['name'],
-                    'harga_satuan' => $value['price'],
-                    'jumlah' => $value['qty'],
-                    'diskon' => 0,
-                    'subtotal_harga' => $value['subtotal'],
+                    'nama_produk' => $value['name'], // Ambil nama produk dari keranjang
+                    'harga_satuan' => $value['price'], // Ambil harga satuan dari keranjang
+                    'jumlah' => $value['qty'], // Menggunakan 'jumlah'
+                    'diskon' => 0, // Sesuaikan jika ada diskon
+                    'subtotal_harga' => $value['subtotal'], // Pastikan subtotal ada di item keranjang
                     'created_at' => date("Y-m-d H:i:s"),
                     'updated_at' => date("Y-m-d H:i:s")
                 ];
@@ -219,7 +218,8 @@ class TransaksiController extends BaseController
             $this->cart->destroy();
 
             // 4. Redirect ke halaman pembayaran dengan ID transaksi
-            return redirect()->to(base_url('pembayaran/' . $transaction_id))->with('success', 'Pesanan Anda berhasil dibuat! Silakan lanjutkan ke pembayaran.');
+            session()->setFlashdata('success', 'Pesanan Anda berhasil dibuat! Silakan lanjutkan ke pembayaran.');
+            return redirect()->to(base_url('pembayaran/' . $transaction_id));
         }
         return redirect()->to(base_url('keranjang'))->with('failed', 'Metode tidak diizinkan.');
     }

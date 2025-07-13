@@ -1,5 +1,3 @@
-v_login :
-
 <?= $this->extend('layout_clear') ?>
 <?= $this->section('content') ?>
 <?php

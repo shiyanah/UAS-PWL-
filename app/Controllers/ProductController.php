@@ -13,9 +13,8 @@ class ProductController extends BaseController
     {
         $this->product = new ProductModel();
         helper('number');
-        helper('form'); // <--- PASTIKAN BARIS INI ADA DAN TIDAK DIKOMEN
+        helper('form'); // Pastikan helper 'form' dimuat
     }
-
 
     public function index()
     {
@@ -37,7 +36,7 @@ class ProductController extends BaseController
         $recommended_products = $this->product
             ->where('id !=', $id)
             ->limit(3)
-            ->orderBy('RAND()')
+            ->orderBy('RAND()') // Menggunakan RAND() untuk rekomendasi acak
             ->findAll();
 
         $data['product_detail'] = $product_detail;
@@ -68,6 +67,7 @@ class ProductController extends BaseController
 
         return redirect('produk')->with('success', 'Data Berhasil Ditambah');
     }
+
     public function edit($id)
     {
         $dataProduk = $this->product->find($id);
@@ -81,7 +81,8 @@ class ProductController extends BaseController
         ];
 
         if ($this->request->getPost('check') == 1) {
-            if ($dataProduk['foto'] != '' and file_exists("NiceAdmin/assets/img/" . $dataProduk['foto'] . "")) {
+            // Hapus foto lama jika ada dan file_exists menggunakan path yang benar
+            if ($dataProduk['foto'] != '' && file_exists("NiceAdmin/assets/img/" . $dataProduk['foto'])) {
                 unlink("NiceAdmin/assets/img/" . $dataProduk['foto']);
             }
 
@@ -89,7 +90,7 @@ class ProductController extends BaseController
 
             if ($dataFoto->isValid()) {
                 $fileName = $dataFoto->getRandomName();
-                $dataFoto->move('NiceAdmin/assets/img/', $fileName);
+                $dataFoto->move('NiceAdmin/assets/img/', $fileName); // Perbaiki path
                 $dataForm['foto'] = $fileName;
             }
         }
@@ -103,7 +104,8 @@ class ProductController extends BaseController
     {
         $dataProduk = $this->product->find($id);
 
-        if ($dataProduk['foto'] != '' and file_exists("NiceAdmin/assets/img/" . $dataProduk['foto'] . "")) {
+        // Hapus foto terkait jika ada dan file_exists menggunakan path yang benar
+        if ($dataProduk['foto'] != '' && file_exists("NiceAdmin/assets/img/" . $dataProduk['foto'])) {
             unlink("NiceAdmin/assets/img/" . $dataProduk['foto']);
         }
 
@@ -111,6 +113,7 @@ class ProductController extends BaseController
 
         return redirect('produk')->with('success', 'Data Berhasil Dihapus');
     }
+
     public function download()
     {
         //get data from database

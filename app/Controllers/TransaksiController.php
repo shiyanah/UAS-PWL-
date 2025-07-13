@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\TransactionModel;
 use App\Models\TransactionDetailModel;
+use App\Models\ProductModel; // Tambahkan ini untuk update stok
 
 class TransaksiController extends BaseController
 {
@@ -12,6 +13,7 @@ class TransaksiController extends BaseController
     protected $apiKey;
     protected $transaction;
     protected $transaction_detail;
+    protected $productModel; // Deklarasikan ProductModel
 
     function __construct()
     {
@@ -22,6 +24,7 @@ class TransaksiController extends BaseController
         $this->apiKey = env('COST_KEY');
         $this->transaction = new TransactionModel();
         $this->transaction_detail = new TransactionDetailModel();
+        $this->productModel = new ProductModel(); // Inisialisasi ProductModel
     }
 
     public function index()
@@ -71,6 +74,7 @@ class TransaksiController extends BaseController
         session()->setflashdata('success', 'Keranjang Berhasil Dihapus');
         return redirect()->to(base_url('keranjang'));
     }
+    
     public function checkout()
     {
         $data['items'] = $this->cart->contents();
@@ -78,6 +82,7 @@ class TransaksiController extends BaseController
 
         return view('v_checkout', $data);
     }
+    
     public function getLocation()
     {
         //keyword pencarian yang dikirimkan dari halaman checkout
@@ -137,40 +142,65 @@ class TransaksiController extends BaseController
         $body = json_decode($response->getBody(), true);
         return $this->response->setJSON($body['data']);
     }
+    
     public function buy()
     {
         if ($this->request->getPost()) {
-            $dataForm = [
-                'username' => $this->request->getPost('username'),
-                'total_harga' => $this->request->getPost('total_harga'),
-                'alamat' => $this->request->getPost('alamat'),
-                'ongkir' => $this->request->getPost('ongkir'),
-                'status' => 0,
+            $username = $this->request->getPost('username');
+            $alamat_pengiriman = $this->request->getPost('alamat');
+
+            // Ambil teks lengkap kelurahan dan layanan dari hidden input
+            $kelurahan_display = $this->request->getPost('kelurahan_text');
+            $layanan_display = $this->request->getPost('layanan_text');
+
+            $ongkir = $this->request->getPost('ongkir');
+            $total_harga = $this->request->getPost('total_harga');
+
+            $id_user = session()->get('id_user') ?? null; // Asumsi id_user disimpan di session
+
+            $dataPesanan = [
+                'id_user' => $id_user,
+                'username' => $username,
+                'alamat' => $alamat_pengiriman,
+                'kelurahan' => $kelurahan_display, // Simpan nama kelurahan yang lengkap
+                'layanan_pengiriman' => $layanan_display, // Simpan deskripsi layanan
+                'ongkir' => $ongkir,
+                'total_harga' => $total_harga,
+                'status_pesanan' => 'menunggu pembayaran', // Menggunakan 'status_pesanan'
                 'created_at' => date("Y-m-d H:i:s"),
                 'updated_at' => date("Y-m-d H:i:s")
             ];
 
-            $this->transaction->insert($dataForm);
-
+            $this->transaction->insert($dataPesanan);
             $last_insert_id = $this->transaction->getInsertID();
 
             foreach ($this->cart->contents() as $value) {
                 $dataFormDetail = [
                     'transaction_id' => $last_insert_id,
                     'product_id' => $value['id'],
-                    'jumlah' => $value['qty'],
-                    'diskon' => 0,
-                    'subtotal_harga' => $value['qty'] * $value['price'],
+                    'nama_produk' => $value['name'], // Ambil nama produk dari keranjang
+                    'harga_satuan' => $value['price'], // Ambil harga satuan dari keranjang
+                    'jumlah' => $value['qty'], // Menggunakan 'jumlah'
+                    'diskon' => 0, // Sesuaikan jika ada diskon
+                    'subtotal_harga' => $value['subtotal'],
                     'created_at' => date("Y-m-d H:i:s"),
                     'updated_at' => date("Y-m-d H:i:s")
                 ];
 
                 $this->transaction_detail->insert($dataFormDetail);
+
+                // Kurangi stok produk
+                $product = $this->productModel->find($value['id']);
+                if ($product) {
+                    $newStock = $product['jumlah'] - $value['qty'];
+                    $this->productModel->update($value['id'], ['jumlah' => $newStock]);
+                }
             }
 
             $this->cart->destroy();
 
-            return redirect()->to(base_url());
+            session()->setFlashdata('success', 'Pesanan Anda berhasil dibuat!');
+            return redirect()->to(base_url('riwayat-pesanan')); // Arahkan ke riwayat pesanan
         }
     }
 }

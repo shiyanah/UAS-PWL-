@@ -24,7 +24,9 @@ $password = [
                         <img src="<?php echo base_url() ?>NiceAdmin/assets/img/logo.png" alt="">
                         <span class="d-none d-lg-block" style="color: #ffffff;">Toko Arunika</span>
                     </a>
-                </div><div class="card mb-3">
+                </div><!-- End Logo -->
+                
+                <div class="card mb-3">
 
                     <div class="card-body">
 
@@ -71,6 +73,10 @@ $password = [
                 </div>
 
                 <div class="credits">
+                    <!-- All the links in the footer should remain intact. -->
+                    <!-- You can delete the links only if you purchased the pro version. -->
+                    <!-- Licensing information: https://bootstrapmade.com/license/ -->
+                    <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ -->
                     Designed by <a href="https://bootstrapmade.com/" style="color: #ffffff;">BootstrapMade</a>
                 </div>
 

@@ -1,9 +1,9 @@
 <?= $this->extend('layout') ?>
 <?= $this->section('content') ?>
-History Transaksi Pembelian <strong><?= $username ?></strong>
+History Transaksi Pembelian <strong><?= $username ?? 'Pengguna' ?></strong>
 <hr>
 <div class="table-responsive">
-    <!-- Table with stripped rows -->
+    <!-- Tabel Riwayat Transaksi -->
     <table class="table datatable">
         <thead>
             <tr>
@@ -13,11 +13,12 @@ History Transaksi Pembelian <strong><?= $username ?></strong>
                 <th scope="col">Total Bayar</th>
                 <th scope="col">Alamat</th>
                 <th scope="col">Status</th>
-                <th scope="col"></th>
+                <th scope="col">Aksi</th>
             </tr>
         </thead>
         <tbody>
             <?php
+            // Memastikan variabel $buy ada dan tidak kosong
             if (!empty($buy)) :
                 foreach ($buy as $index => $item) :
             ?>
@@ -27,51 +28,91 @@ History Transaksi Pembelian <strong><?= $username ?></strong>
                         <td><?php echo $item['created_at'] ?></td>
                         <td><?php echo number_to_currency($item['total_harga'], 'IDR') ?></td>
                         <td><?php echo $item['alamat'] ?></td>
-                        <td><?php echo ($item['status'] == "1") ? "Sudah Selesai" : "Belum Selesai" ?></td>
                         <td>
+                            <?php
+                            // Menampilkan status pesanan berdasarkan nilai dari database
+                            if ($item['status_pesanan'] == 'menunggu pembayaran') {
+                                echo 'Menunggu Pembayaran';
+                            } elseif ($item['status_pesanan'] == 'diproses') {
+                                echo 'Diproses';
+                            } elseif ($item['status_pesanan'] == 'dikirim') {
+                                echo 'Dikirim';
+                            } elseif ($item['status_pesanan'] == 'selesai') {
+                                echo 'Selesai';
+                            } else {
+                                echo ucfirst($item['status_pesanan']); // Default jika ada status lain
+                            }
+                            ?>
+                        </td>
+                        <td>
+                            <!-- Tombol Detail untuk membuka modal -->
                             <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#detailModal-<?= $item['id'] ?>">
                                 Detail
                             </button>
                         </td>
                     </tr>
-                    <!-- Detail Modal Begin -->
-                    <div class="modal fade" id="detailModal-<?= $item['id'] ?>" tabindex="-1">
+                    <!-- Detail Modal untuk setiap transaksi -->
+                    <div class="modal fade" id="detailModal-<?= $item['id'] ?>" tabindex="-1" aria-labelledby="detailModalLabel-<?= $item['id'] ?>" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title">Detail Data</h5>
+                                    <h5 class="modal-title" id="detailModalLabel-<?= $item['id'] ?>">Detail Pesanan #<?= $item['id'] ?></h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
+                                    <h6>Produk yang Dibeli:</h6>
                                     <?php
-                                    if (!empty($product)) {
-                                        foreach ($product[$item['id']] as $index2 => $item2) : ?>
-                                            <?php echo $index2 + 1 . ")" ?>
-                                            <?php if ($item2['foto'] != '' and file_exists("NiceAdmin/assets/img/" . $item2['foto'] . "")) : ?>
-                                                <img src="<?php echo base_url() . "NiceAdmin/assets/img/" . $item2['foto'] ?>" width="100px">
-                                            <?php endif; ?>
-                                            <strong><?= $item2['nama'] ?></strong>
-                                            <?= number_to_currency($item2['harga'], 'IDR') ?>
-                                            <br>
-                                            <?= "(" . $item2['jumlah'] . " pcs)" ?><br>
-                                            <?= number_to_currency($item2['subtotal_harga'], 'IDR') ?>
+                                    // Memastikan variabel $detail_products ada dan berisi detail untuk transaksi ini
+                                    if (isset($detail_products[$item['id']]) && !empty($detail_products[$item['id']])) {
+                                        foreach ($detail_products[$item['id']] as $index2 => $item2) : ?>
+                                            <p>
+                                                <?php echo $index2 + 1 ?>)
+                                                <?php if ($item2['foto'] != '' && file_exists("NiceAdmin/assets/img/" . $item2['foto'] . "")) : ?>
+                                                    <img src="<?php echo base_url() . "NiceAdmin/assets/img/" . $item2['foto'] ?>" width="50px" class="img-thumbnail me-2">
+                                                <?php endif; ?>
+                                                <strong><?= $item2['nama_produk'] ?></strong><br>
+                                                <?= number_to_currency($item2['harga_satuan'], 'IDR') ?> x <?= $item2['jumlah'] ?> pcs<br>
+                                                Subtotal: <?= number_to_currency($item2['subtotal_harga'], 'IDR') ?>
+                                            </p>
                                             <hr>
-                                    <?php
+                                        <?php
                                         endforeach;
+                                    } else {
+                                        echo '<p>Tidak ada detail produk untuk pesanan ini.</p>';
                                     }
                                     ?>
-                                    Ongkir <?= number_to_currency($item['ongkir'], 'IDR') ?>
+                                    <p><strong>Alamat Pengiriman:</strong> <?= esc($item['alamat']) ?>, <?= esc($item['kelurahan']) ?></p>
+                                    <p><strong>Layanan Pengiriman:</strong> <?= esc($item['layanan_pengiriman']) ?></p>
+                                    <p><strong>Ongkir:</strong> <?= number_to_currency($item['ongkir'], 'IDR') ?></p>
+                                    <p><strong>Total Harga:</strong> <?= number_to_currency($item['total_harga'], 'IDR') ?></p>
+                                    <p><strong>Status Pesanan:</strong>
+                                        <?php
+                                        if ($item['status_pesanan'] == 'menunggu pembayaran') {
+                                            echo 'Menunggu Pembayaran';
+                                        } elseif ($item['status_pesanan'] == 'diproses') {
+                                            echo 'Diproses';
+                                        } elseif ($item['status_pesanan'] == 'dikirim') {
+                                            echo 'Dikirim';
+                                        } elseif ($item['status_pesanan'] == 'selesai') {
+                                            echo 'Selesai';
+                                        } else {
+                                            echo ucfirst($item['status_pesanan']);
+                                        }
+                                        ?>
+                                    </p>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <!-- Detail Modal End -->
             <?php
                 endforeach;
-            endif;
+            else :
             ?>
+                <tr>
+                    <td colspan="7" class="text-center">Tidak ada riwayat transaksi.</td>
+                </tr>
+            <?php endif; ?>
         </tbody>
     </table>
-    <!-- End Table with stripped rows -->
 </div>
 <?= $this->endSection() ?>

@@ -66,13 +66,6 @@ class Home extends BaseController
         return view('v_profile', $data);
     }
     
-    // Perbaikan: Menghapus duplikasi fungsi 'public function profile()' yang menyebabkan syntax error.
-    // Kode duplikasi yang ada di file Anda:
-    // public function profile() 
-    // {
-    // ... (kode duplikasi)
-    // }
-
     public function hello($name = null)
     {
         $data['nama'] = $name;

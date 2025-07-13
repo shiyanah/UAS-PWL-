@@ -2,42 +2,81 @@
 
 namespace App\Controllers;
 
+use App\Models\ProductModel;
+// Hapus atau komen TransactionModel dan TransactionDetailModel jika tidak digunakan langsung di Home
+// use App\Models\TransactionModel;
+// use App\Models\TransactionDetailModel;
+
 class Home extends BaseController
 {
+    protected $product;
+    // Hapus atau komen ini jika tidak digunakan langsung di Home
+    // protected $transaction;
+    // protected $transaction_detail;
+
+    function __construct()
+    {
+        helper('form');
+        helper('number');
+        $this->product = new ProductModel();
+        // Hapus atau komen ini jika tidak digunakan langsung di Home
+        // $this->transaction = new TransactionModel();
+        // $this->transaction_detail = new TransactionDetailModel();
+    }
+
+
     public function index()
     {
-        return view('welcome_message');
+        $product = $this->product->findAll();
+        $data['product'] = $product;
+        return view('v_home', $data);
     }
 
-    public function produk()
+    public function profile()
     {
-        return view('content/produk');
+        $username = session()->get('username');
+        $data['username'] = $username; // Mengirimkan username ke view
+
+        // DISESUAIKAN: Sekarang akan memuat view v_profile_extended.php
+        return view('v_profile', $data);
     }
 
-    public function kategori($id = null)
+    public function hello($name = null)
     {
-        $data['kat'] = [
-            1 => 'Snack',
-            2 => 'Makanan',
-            3 => 'Minuman',
-            4 => 'Bumbu dapur',
-            5 => 'Alat Tulis'
+        $data['nama'] = $name;
+        $data['title'] = "Judul halaman";
+        return view('front', $data);
+    }
+
+    public function keranjang($id = null)
+    {
+        // Ini adalah fungsi yang tampaknya tidak terpakai atau duplikasi dari TransaksiController::index()
+        // Anda mungkin ingin menghapusnya jika TransaksiController::index() sudah menangani keranjang
+        $data = [
+            'kat' => [
+                'Alat Tulis',
+                'Pakaian',
+                'Pertukangan',
+                'Elektronik',
+                'Snack'
+            ],
         ];
-
-        $kat = $data['kat'];
-           // Jika ID kategori diberikan, tampilkan kategori yang sesuai
-        if ($id !== null) {
-            echo "<h1> " . ($kat[$id] ?? 'Kategori tidak ditemukan') . "</h1>";
-           // echo "<a href='/kategori'>Kembali ke halaman kategori</a>";
-            // Jika tidak ada ID yang diberikan, tampilkan semua kategori
+        $meta = ['title' => 'keranjang'];
+        if (!is_null($id)) {
+            echo $data['kat'][$id];
         } else {
-            echo "<h1>Ini adalah halaman kategori</h1>";
-            echo "<ul>";
-            foreach ($kat as $key => $value) {
-                echo "<li><a href='/kategori/$key'>$value</a></li>";
-            }
-            echo "</ul>";
+            echo view('layout/header', $meta);
+            echo view('layout/sidebar');
+            echo view('content/keranjang', $data);
+            echo view('layout/footer');
         }
-        
+    }
+    public function password()
+    {
+        echo view('Views/hash');
+    }
+    public function faq()
+    {
+        echo view('layout/faq');
     }
 }

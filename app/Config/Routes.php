@@ -10,12 +10,9 @@ $routes->get('/', 'Home::index', ['filter' => 'auth']);
 
 $routes->get('/page-faq', 'Home::faq');
 
-<<<<<<< HEAD
 // Rute untuk halaman detail produk
 $routes->get('produk_detail/(:num)', 'Home::produk_detail/$1', ['filter' => 'auth']);
 
-=======
->>>>>>> b975839726026fcc5ed5e2156954efa0aaa1b1b7
 // PERBAIKAN: Menggunakan FilterStokController untuk rute filter-stok
 $routes->get('filter-stok', 'FilterStokController::index');
 $routes->get('filter-stok/export-pdf', 'FilterStokController::exportPdf');
@@ -49,8 +46,3 @@ $routes->post('buy', 'TransaksiController::buy', ['filter' => 'auth']);
 $routes->get('profile', 'Home::profile', ['filter' => 'auth']);
 
 $routes->resource('api', ['controller' => 'apiController']);
-<<<<<<< HEAD
-
-
-=======
->>>>>>> b975839726026fcc5ed5e2156954efa0aaa1b1b7

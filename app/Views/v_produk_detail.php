@@ -36,6 +36,41 @@
             </div>
         </div>
     </div>
+
+    <div class="mt-5">
+        <h4 class="mb-4">Produk Lain yang Mungkin Anda Suka</h4>
+        <div class="row">
+            <?php if (isset($recommended_products) && !empty($recommended_products)): ?>
+                <?php foreach ($recommended_products as $item): ?>
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <?= form_open('keranjang') ?>
+                        <?php
+                        echo form_hidden('id', $item['id']);
+                        echo form_hidden('nama', $item['nama']);
+                        echo form_hidden('harga', $item['harga']);
+                        echo form_hidden('foto', $item['foto']);
+                        ?>
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <img src="<?php echo base_url() . "NiceAdmin/assets/img/" . $item['foto'] ?>"
+                                    alt="<?php echo $item['nama'] ?>"
+                                    style="width: 100%; height: 200px; object-fit: contain;">
+                                <h5 class="card-title"><?php echo $item['nama'] ?></h5>
+                                <p class="card-text">IDR <?php echo number_format($item['harga'], 0, ',', '.') ?></p>
+                                <a href="<?= base_url('produk_detail/' . $item['id']) ?>" class="btn btn-info rounded-pill">Detail</a>
+                                <button type="submit" class="btn btn-primary rounded-pill">Beli</button>
+                            </div>
+                        </div>
+                        <?= form_close() ?>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="col-12">
+                    <p>Tidak ada rekomendasi produk saat ini.</p>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
 </div>
 
 <?= $this->endSection() ?>

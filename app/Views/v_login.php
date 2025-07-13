@@ -14,11 +14,7 @@ $password = [
 ];
 ?>
 
-<<<<<<< HEAD
 <section class="login-page-background section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
-=======
-<section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
->>>>>>> b975839726026fcc5ed5e2156954efa0aaa1b1b7
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
@@ -26,17 +22,9 @@ $password = [
                 <div class="d-flex justify-content-center py-4">
                     <a href="index.html" class="logo d-flex align-items-center w-auto">
                         <img src="<?php echo base_url() ?>NiceAdmin/assets/img/logo.png" alt="">
-<<<<<<< HEAD
                         <span class="d-none d-lg-block" style="color: #ffffff;">Toko Arunika</span>
                     </a>
                 </div><div class="card mb-3">
-=======
-                        <span class="d-none d-lg-block">Toko Arunika</span>
-                    </a>
-                </div><!-- End Logo -->
-
-                <div class="card mb-3">
->>>>>>> b975839726026fcc5ed5e2156954efa0aaa1b1b7
 
                     <div class="card-body">
 
@@ -83,15 +71,7 @@ $password = [
                 </div>
 
                 <div class="credits">
-<<<<<<< HEAD
                     Designed by <a href="https://bootstrapmade.com/" style="color: #ffffff;">BootstrapMade</a>
-=======
-                    <!-- All the links in the footer should remain intact. -->
-                    <!-- You can delete the links only if you purchased the pro version. -->
-                    <!-- Licensing information: https://bootstrapmade.com/license/ -->
-                    <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ -->
-                    Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
->>>>>>> b975839726026fcc5ed5e2156954efa0aaa1b1b7
                 </div>
 
             </div>

@@ -9,12 +9,14 @@ class ProductController extends BaseController
 {
     protected $product;
 
+    // Konstruktor: Inisialisasi model produk
     function __construct()
     {
         $this->product = new ProductModel();
     }
 
 
+    // Menampilkan daftar produk
     public function index()
     {
         $product = $this->product->findAll();
@@ -23,6 +25,7 @@ class ProductController extends BaseController
         return view('v_produk', $data);
     }
 
+    // Menambah produk baru
     public function create()
     {
         $dataFoto = $this->request->getFile('foto');
@@ -31,14 +34,11 @@ class ProductController extends BaseController
             'nama' => $this->request->getPost('nama'),
             'harga' => $this->request->getPost('harga'),
             'jumlah' => $this->request->getPost('jumlah'),
-<<<<<<< HEAD
-            // Menambahkan deskripsi ke data yang akan disimpan
             'deskripsi' => $this->request->getPost('deskripsi'), 
-=======
->>>>>>> b975839726026fcc5ed5e2156954efa0aaa1b1b7
             'created_at' => date("Y-m-d H:i:s")
         ];
 
+        // Memproses upload foto jika valid
         if ($dataFoto->isValid()) {
             $fileName = $dataFoto->getRandomName();
             $dataForm['foto'] = $fileName;
@@ -49,10 +49,8 @@ class ProductController extends BaseController
 
         return redirect('produk')->with('success', 'Data Berhasil Ditambah');
     }
-<<<<<<< HEAD
-    
-=======
->>>>>>> b975839726026fcc5ed5e2156954efa0aaa1b1b7
+
+    // Mengubah data produk
     public function edit($id)
     {
         $dataProduk = $this->product->find($id);
@@ -61,19 +59,18 @@ class ProductController extends BaseController
             'nama' => $this->request->getPost('nama'),
             'harga' => $this->request->getPost('harga'),
             'jumlah' => $this->request->getPost('jumlah'),
-<<<<<<< HEAD
-            // Menambahkan deskripsi ke data yang akan diubah
             'deskripsi' => $this->request->getPost('deskripsi'),
-=======
->>>>>>> b975839726026fcc5ed5e2156954efa0aaa1b1b7
             'updated_at' => date("Y-m-d H:i:s")
         ];
 
+        // Memeriksa apakah ada perubahan foto
         if ($this->request->getPost('check') == 1) {
+            // Hapus foto lama jika ada
             if ($dataProduk['foto'] != '' and file_exists("img/" . $dataProduk['foto'] . "")) {
                 unlink("img/" . $dataProduk['foto']);
             }
 
+            // Upload foto baru jika valid
             $dataFoto = $this->request->getFile('foto');
 
             if ($dataFoto->isValid()) {
@@ -88,10 +85,12 @@ class ProductController extends BaseController
         return redirect('produk')->with('success', 'Data Berhasil Diubah');
     }
 
+    // Menghapus produk
     public function delete($id)
     {
         $dataProduk = $this->product->find($id);
 
+        // Hapus foto terkait jika ada
         if ($dataProduk['foto'] != '' and file_exists("img/" . $dataProduk['foto'] . "")) {
             unlink("img/" . $dataProduk['foto']);
         }
@@ -100,34 +99,53 @@ class ProductController extends BaseController
 
         return redirect('produk')->with('success', 'Data Berhasil Dihapus');
     }
+
+    // Menampilkan detail produk dan rekomendasi produk lain
+    public function detail($id)
+    {
+        // 1. Ambil data produk utama
+        $product = $this->product->find($id);
+
+        // 2. Ambil 4 produk rekomendasi (selain produk yang sedang dilihat)
+        $recommendedProducts = $this->product
+            ->where('id !=', $id)
+            ->limit(4)
+            ->findAll();
+
+        // Kirim data ke view
+        $data = [
+            'product' => $product,
+            'recommended_products' => $recommendedProducts,
+        ];
+
+        return view('v_produk_detail', $data);
+    }
+
+    // Mengunduh laporan produk dalam format PDF
     public function download()
     {
-        //get data from database
+        // Ambil semua data produk dari database
         $product = $this->product->findAll();
 
-        //pass data to file view
+        // Muat data ke file view PDF
         $html = view('v_produkPDF', ['product' => $product]);
 
-        //set the pdf filename
+        // Atur nama file PDF
         $filename = date('y-m-d-H-i-s') . '-produk';
 
-        // instantiate and use the dompdf class
+        // Inisiasi Dompdf
         $dompdf = new Dompdf();
 
-        // load HTML content (file view)
+        // Muat konten HTML ke Dompdf
         $dompdf->loadHtml($html);
 
-        // (optional) setup the paper size and orientation
+        // (Opsional) Atur ukuran kertas dan orientasi
         $dompdf->setPaper('A4', 'potrait');
 
-        // render html as PDF
+        // Render HTML sebagai PDF
         $dompdf->render();
 
-        // output the generated pdf
+        // Output PDF yang dihasilkan
         $dompdf->stream($filename);
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> b975839726026fcc5ed5e2156954efa0aaa1b1b7
